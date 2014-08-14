@@ -56,7 +56,7 @@ public class JavaFXApplication3 extends Application {
     
     HBox hBox_outter;
     HBox hBox_outter_last;
-    boolean split = false;
+    boolean split = true;
     
 
     int total_donnation = 1200;
@@ -114,8 +114,8 @@ public class JavaFXApplication3 extends Application {
                 FileInputStream fis = new FileInputStream(file);  
                 BufferedImage image = ImageIO.read(fis); //reading the image file  
 
-                int rows = 45; //You should decide the values for rows and cols variables  
-                int cols = 26;  
+                int rows = 26; //You should decide the values for rows and cols variables  
+                int cols = 45;  
                 int chunks = rows * cols;  
 
                 int chunkWidth = image.getWidth() / cols; // determines the chunk width and height  
@@ -144,8 +144,8 @@ public class JavaFXApplication3 extends Application {
                 FileInputStream fis2 = new FileInputStream(file2);  
                 BufferedImage image2 = ImageIO.read(fis2); //reading the image file  
 
-                int rows2 = 43; //You should decide the values for rows and col variables  
-                int cols2 = 42;  
+                int rows2 = 42; //You should decide the values for rows and col variables  
+                int cols2 = 43;  
                 int chunks2 = rows2 * cols2;  
 
                 int chunkWidth2 = image2.getWidth() / cols2; // determines the chunk width and height  
@@ -231,11 +231,11 @@ public class JavaFXApplication3 extends Application {
 
                                 grid_pane1.add(imageview_tile1, current_column_pane1,current_row_pane1);   
     //                            grid_pane1.setCacheHint(CacheHint.SPEED);
-                                current_row_pane1 = current_row_pane1+1;
-                                if (current_row_pane1 == max_rows_pane1 )
+                                current_column_pane1 = current_column_pane1+1;
+                                if (current_column_pane1 == max_columns_pane1 )
                                 {
-                                    current_column_pane1 = current_column_pane1+1;
-                                    current_row_pane1 = 0;
+                                    current_row_pane1 = current_row_pane1+1;
+                                    current_column_pane1 = 0;
                                 }
                                 if (i == max_donnation_pane1 ){ System.out.println("Pane 1 full"); break;}
                                 if (i == total_donnation)
@@ -283,11 +283,11 @@ public class JavaFXApplication3 extends Application {
                                     ft.play();
 
                                     grid_pane2.add(imageview_tile2, current_column_pane2,current_row_pane2);       
-                                    current_row_pane2 = current_row_pane2+1;
-                                    if (current_row_pane2 == max_rows_pane2 )
+                                    current_column_pane2 = current_column_pane2+1;
+                                    if (current_column_pane2 == max_columns_pane2 )
                                     {
-                                        current_column_pane2 = current_column_pane2+1;
-                                        current_row_pane2 = 0;
+                                        current_row_pane2 = current_row_pane2+1;
+                                        current_column_pane2 = 0;
                                     }
                                     if (j == max_donnation_pane2 ){ System.out.println("Pane 2 full"); break;}
                                     if (j == total_donnation_left)
@@ -398,7 +398,7 @@ public class JavaFXApplication3 extends Application {
     public GridPane image_pane() {
       
         String image_old = JavaFXApplication3.class.getResource("/Images/mussalah_old.png").toExternalForm();
-        image_pane.setStyle("-fx-background-image: url('" + image_old + "'); -fx-background-repeat: no-repeat; -fx-background-size: contain;");        
+//        image_pane.setStyle("-fx-background-image: url('" + image_old + "'); -fx-background-repeat: no-repeat; -fx-background-size: contain;");        
         image_pane.getColumnConstraints().setAll(
                 ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
                 ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
