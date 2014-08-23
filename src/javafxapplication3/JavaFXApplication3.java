@@ -19,7 +19,11 @@ import java.util.logging.Logger;
 import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
+import javafx.animation.Transition;
 import javafx.application.Application;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -54,13 +58,15 @@ public class JavaFXApplication3 extends Application {
     GridPane grid_pane1 = new GridPane();
     GridPane grid_pane2 = new GridPane();
     
-    HBox hBox_outter;
+    HBox hBox_outter1;
+    HBox hBox_outter2;
+    
     HBox hBox_outter_last;
     boolean split = false;
     boolean pane1_full = false;
     
 
-    int total_donnation = 1200;
+    int total_donnation = 900;
     int old_total_donnation = 0 ;
     
     private AnimationTimer translate_timer;
@@ -74,7 +80,7 @@ public class JavaFXApplication3 extends Application {
     File blink_file ;
     Image blink_image1;
     ImageView blink_image;
-    String style_outter;
+    String style_outter =   "-fx-border-color: black;" + "-fx-border-width: 0.5;";;
     FadeTransition ft;
     FadeTransition ft1;
     File file2;
@@ -116,7 +122,59 @@ public class JavaFXApplication3 extends Application {
             blink_image = new ImageView(blink_image1);
             blink_image.setFitWidth(image_Width);
             blink_image.setPreserveRatio(true);
+            
+            
+            
+            ////////////////////////////////
+            
+            
+            new Thread(() -> 
+        {
+             System.out.println(" ... Motion Detection Starting.....");
+             for (;;) 
+             {
+                try 
+                {
+                    old_total_donnation = total_donnation;
+                    try
+                    {
+    //                    c = DBConnect.connect();
+    //                    SQL = "Select * from donations";
+    //                    rs = c.createStatement().executeQuery(SQL);
+    //                    while (rs.next()) 
+    //                    {total_donnation = rs.getInt("total_donnation");}
+    //                    c.close(); 
+                        total_donnation = total_donnation +5;
+                        Thread.sleep(10000);
+                    }
+                    catch (Exception e){Logger.getLogger(JavaFXApplication3.class.getName()).log(Level.SEVERE, null, e);}
+                }     
+                 catch (Exception ex) {Logger.getLogger(JavaFXApplication3.class.getName()).log(Level.SEVERE, null, ex); Thread.currentThread().interrupt();}
+                 
+                 
+             }
+
+         }).start();
+            ////////////////////
+            
+            
+            
+            
+            
+            
+            
            
+            DoubleProperty opacity = new SimpleDoubleProperty();
+                    Transition opacityTransition = new Transition() {
+            {
+                setCycleDuration(Duration.seconds(1));
+                setCycleCount(Animation.INDEFINITE);
+            }
+            protected void interpolate(double frac) {
+                opacity.set(frac);
+            }
+        };
+
             
             if(split)
             {
@@ -187,7 +245,7 @@ public class JavaFXApplication3 extends Application {
             @Override public void handle(long now) {
                 if (now > translate_lastTimerCall + 10000_000_000l) 
                 {
-                    old_total_donnation = total_donnation;
+//                    old_total_donnation = total_donnation;
                     try 
                     {
 //                        c = DBConnect.connect();
@@ -197,7 +255,7 @@ public class JavaFXApplication3 extends Application {
 //                        {total_donnation = rs.getInt("total_donnation");}
 //                        c.close();
                         
-                        total_donnation ++;
+//                        total_donnation = total_donnation +5;
                         
                         if(total_donnation != old_total_donnation)
                         {
@@ -206,42 +264,57 @@ public class JavaFXApplication3 extends Application {
                             old_total_donnation = total_donnation;
                             if (!pane1_full)
                             {
-                                grid_pane1.getChildren().clear();
+//                                grid_pane1.getChildren().clear();
                                 grid_pane1.getChildren().removeAll(imageview_tile1,hBox_outter_last);                                
                             }
-                            grid_pane2.getChildren().clear();
+//                            grid_pane2.getChildren().clear();
                             grid_pane2.getChildren().removeAll(imageview_tile2,hBox_outter_last);
 
                             for(i=0; i<=total_donnation; i++)
                             {
-                                if (pane1_full){  System.out.println("Pane 1 has not been redrawn"); break;}
-                                file1 = new File("pane1_img"+i+".png");
-                                pane1_tiled_image = new Image(file1.toURI().toString(),image_Width,image_Height,false,false);
-                                imageview_tile1 = new ImageView(pane1_tiled_image);
-                                grid_pane1.add(imageview_tile1, current_column_pane1,current_row_pane1);   
+                                if (pane1_full){  System.out.println("Pane 1 has not been redrawn"); if(ft1 != null) { ft1.stop(); } break;}
+                                ImageView imageview_tile1 = new ImageView(new Image(getClass().getResourceAsStream("/Images/image_tiles/pane1_img"+i+".png")));                                   
+                                imageview_tile1.setFitWidth(image_Width);
+                                imageview_tile1.setFitHeight(image_Height);
+                                imageview_tile1.setPreserveRatio(false);
+
+                                hBox_outter1 = new HBox();
+                                hBox_outter1.setStyle(style_outter);
+                                hBox_outter1.getChildren().add(imageview_tile1);
+                               
+                                
+                                
+                                grid_pane1.add(hBox_outter1, current_column_pane1,current_row_pane1);   
                                 current_column_pane1 = current_column_pane1+1;
                                 if (current_column_pane1 == max_columns_pane1 )
                                 {
                                     current_row_pane1 = current_row_pane1+1;
                                     current_column_pane1 = 0;
                                 }
-                                if (i == max_donnation_pane1 ){ pane1_full = true; System.out.println("Pane 1 full"); break;}
+                                if (i == max_donnation_pane1 ){ pane1_full = true; System.out.println("Pane 1 full"); if(ft1 != null) { ft1.stop(); } break; }
                                 if (i == total_donnation)
                                 {
                                     if (i != max_donnation_pane1)
                                     {
-                                        
-                                        hBox_outter_last = new HBox();
-                                        hBox_outter_last.setStyle(style_outter);
-                                        hBox_outter_last.getChildren().add(blink_image);
-
-                                        ft1 = new FadeTransition(Duration.millis(500), hBox_outter_last);
-                                        ft1.setFromValue(1.0);
-                                        ft1.setToValue(0.3);
-                                        ft1.setCycleCount(Animation.INDEFINITE);
-                                        ft1.setAutoReverse(true);
-                                        ft1.play();
-                                        grid_pane1.add(hBox_outter_last, current_column_pane1,current_row_pane1);
+//                                        String nodeId = hBox_outter1.idProperty().get();
+//                                        System.out.println(nodeId);
+                                                
+                                                
+//                                        hBox_outter_last = new HBox();
+//                                        hBox_outter_last.setStyle(style_outter);
+//                                        hBox_outter_last.getChildren().add(blink_image);
+//                                        
+//                                        if(ft1 != null) { ft1.stop(); }
+//                                        ft1 = new FadeTransition(Duration.millis(1000), hBox_outter_last);
+//                                        ft1.setFromValue(1.0);
+//                                        ft1.setToValue(0.3);
+//                                        ft1.setCycleCount(Animation.INDEFINITE);
+//                                        ft1.setAutoReverse(true);
+//                                        ft1.play();
+//                                        grid_pane1.add(hBox_outter_last, current_column_pane1,current_row_pane1);
+//                                        hBox_outter_last.opacityProperty().bind(opacity);
+//                                        opacityTransition.stop();
+//                                        opacityTransition.play();
                                     }
                                 }
                             }
@@ -251,33 +324,43 @@ public class JavaFXApplication3 extends Application {
                                 total_donnation_left = total_donnation - max_donnation_pane1;
                                 for(j=0; j<=total_donnation_left; j++)
                                 {
-                                    file2 = new File("pane2_img"+j+".png");
-                                    pane2_tiled_image = new Image(file2.toURI().toString(),image_Width,image_Height,false,false);
-                                    imageview_tile2 = new ImageView(pane2_tiled_image);
-                                    grid_pane2.add(imageview_tile2, current_column_pane2,current_row_pane2);       
+
+                                    ImageView imageview_tile2 = new ImageView(new Image(getClass().getResourceAsStream("/Images/image_tiles/pane2_img"+j+".png")));      
+                                    imageview_tile2.setFitWidth(image_Width);
+                                    imageview_tile2.setFitHeight(image_Height);
+                                    imageview_tile2.setPreserveRatio(false);
+                                    
+                                    hBox_outter2 = new HBox();
+                                    hBox_outter2.setStyle(style_outter);
+                                    hBox_outter2.getChildren().add(imageview_tile2);
+                                    
+                                    
+                                    grid_pane2.add(hBox_outter2, current_column_pane2,current_row_pane2);       
                                     current_column_pane2 = current_column_pane2+1;
                                     if (current_column_pane2 == max_columns_pane2 )
                                     {
                                         current_row_pane2 = current_row_pane2+1;
                                         current_column_pane2 = 0;
                                     }
-                                    if (j == max_donnation_pane2 ){ System.out.println("Pane 2 full"); break;}
+                                    if (j >= max_donnation_pane2 ){ System.out.println("Pane 2 full"); break;}
                                     if (j == total_donnation_left)
                                     {
                                         if (j != max_donnation_pane2)
                                         {
-                                            hBox_outter_last = new HBox();
-                                            hBox_outter_last.setStyle(style_outter);
-                                            hBox_outter_last.getChildren().add(blink_image);
-
-                                            ft = new FadeTransition(Duration.millis(500), hBox_outter_last);
-                                            ft.setFromValue(1.0);
-                                            ft.setToValue(0.3);
-                                            ft.setCycleCount(Animation.INDEFINITE);
-                                            ft.setAutoReverse(true);
-                                            ft.play();
+//                                            hBox_outter_last = new HBox();
+//                                            hBox_outter_last.setStyle(style_outter);
+//                                            hBox_outter_last.getChildren().add(blink_image);
                                             
-                                            grid_pane2.add(hBox_outter_last, current_column_pane2,current_row_pane2);
+//                                            if(ft != null) { ft.stop(); System.out.println("ft stoped");}
+//                                            
+//                                            ft = new FadeTransition(Duration.millis(500), hBox_outter_last);
+//                                            ft.setFromValue(1.0);
+//                                            ft.setToValue(0.3);
+//                                            ft.setCycleCount(Animation.INDEFINITE);
+//                                            ft.setAutoReverse(true);
+//                                            ft.play();
+                                            
+//                                            grid_pane2.add(hBox_outter_last, current_column_pane2,current_row_pane2);
                                         }
                                     }  
                                 }
@@ -306,7 +389,7 @@ public class JavaFXApplication3 extends Application {
         stage.setScene(scene);
         Mainpane =   Main_pane();
         image_pane =   image_pane();
-        Mainpane.add(image_pane, 1, 10,11,4);  
+        Mainpane.add(image_pane, 0, 10,11,4);  
         scene.setRoot(Mainpane);
 //        stage.sizeToScene(); 
         stage.show();
@@ -320,6 +403,7 @@ public class JavaFXApplication3 extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+        System.exit(0);
     }
     
     public GridPane Main_pane() {
@@ -449,9 +533,8 @@ public class JavaFXApplication3 extends Application {
         );
 //        image_pane.setGridLinesVisible(true);
         image_pane.setPadding(new Insets(10, 10, 10, 10));
-        
-        image_pane.add(grid_pane1,3,9,13,14);
-        image_pane.add(grid_pane2,15,1,12,21);
+        image_pane.add(grid_pane1,1,9,13,14);
+        image_pane.add(grid_pane2,16,1,12,21);
 //        image_pane.setId("prayertime_pane");
         image_pane.setPadding(new Insets(20, 20, 20, 20));
         DropShadow ds = new DropShadow();
