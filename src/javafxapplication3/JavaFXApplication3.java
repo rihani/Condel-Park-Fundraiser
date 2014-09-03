@@ -6,6 +6,11 @@
 
 package javafxapplication3;
 
+import eu.hansolo.enzo.common.Section;
+import eu.hansolo.enzo.gauge.SimpleGauge;
+import eu.hansolo.enzo.gauge.SimpleGaugeBuilder;
+import eu.hansolo.enzo.imgsplitflap.SplitFlap;
+import eu.hansolo.enzo.imgsplitflap.SplitFlapBuilder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -43,9 +48,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.util.Duration;  
 import javax.imageio.ImageIO;
+
 /**
  *
  * @author samia
@@ -57,16 +64,19 @@ public class JavaFXApplication3 extends Application {
     GridPane Subpane = new GridPane();
     GridPane grid_pane1 = new GridPane();
     GridPane grid_pane2 = new GridPane();
+    private SplitFlap area1000, area100, area10, area1, m210, m21;
     
     HBox hBox_outter1;
     HBox hBox_outter2;
     
     HBox hBox_outter_last;
+    HBox hBox_old_Mussalah;
+    HBox hbox_splitflap;
+
     boolean split = false;
     boolean pane1_full = false;
-    
 
-    int total_donnation = 900;
+    Integer total_donnation = 900;
     int old_total_donnation = 0 ;
     
     private AnimationTimer translate_timer;
@@ -80,7 +90,8 @@ public class JavaFXApplication3 extends Application {
     File blink_file ;
     Image blink_image1;
     ImageView blink_image;
-    String style_outter =   "-fx-border-color: black;" + "-fx-border-width: 0.5;";;
+    double border_width = 0.75;
+    String style_outter =   "-fx-border-color: black;" + "-fx-border-width: " + border_width + ";";
     FadeTransition ft;
     FadeTransition ft1;
     File file2;
@@ -99,9 +110,14 @@ public class JavaFXApplication3 extends Application {
     int max_rows_pane2 = 42;
     int current_row_pane2 = 0;
     int current_column_pane2 = 0;
+    
+    int image_paneY = 70;
+    int footerY = 20;
+    
+    
     //////////////////////////////////
-    double image_Width = 7.95;   
-    double image_Height = 7.95;
+    double image_Width = 8;   //7.95 
+    double image_Height =8;  //7.95
     ///////////////////////////////////    
 
     int max_donnation_pane1 = 1169;
@@ -116,59 +132,56 @@ public class JavaFXApplication3 extends Application {
     @Override 
         public void init() throws IOException {
             
+
+            Font.loadFont(JavaFXApplication3.class.getResource("Fonts/Bebas.ttf").toExternalForm(),30);
+            Font.loadFont(JavaFXApplication3.class.getResource("Fonts/avantgarde-demi.ttf").toExternalForm(),30);
+
             
             blink_file = new File("blink.png");
             blink_image1 = new Image(blink_file.toURI().toString());
             blink_image = new ImageView(blink_image1);
             blink_image.setFitWidth(image_Width);
             blink_image.setPreserveRatio(true);
-            
-            
-            
-            ////////////////////////////////
-            
-            
+    
             new Thread(() -> 
         {
-             System.out.println(" ... Motion Detection Starting.....");
+             System.out.println(" ... Database thread starting.....");
+             boolean firsttime = true;
              for (;;) 
              {
-                try 
+                
+                 try 
                 {
                     old_total_donnation = total_donnation;
                     try
                     {
-    //                    c = DBConnect.connect();
-    //                    SQL = "Select * from donations";
-    //                    rs = c.createStatement().executeQuery(SQL);
-    //                    while (rs.next()) 
-    //                    {total_donnation = rs.getInt("total_donnation");}
-    //                    c.close(); 
+                        if (firsttime){
+                        c = DBConnect.connect();
+                        SQL = "Select * from donations";
+                        rs = c.createStatement().executeQuery(SQL);
+                        while (rs.next()) 
+                        {total_donnation = rs.getInt("total_donnation");}
+                        c.close(); 
+                        firsttime = false;
+                    
+                        }
                         total_donnation = total_donnation +5;
-                        Thread.sleep(10000);
+                        
+                         
+///////////////////////////change to small refresh times
+                        Thread.sleep(30000);
                     }
                     catch (Exception e){Logger.getLogger(JavaFXApplication3.class.getName()).log(Level.SEVERE, null, e);}
                 }     
                  catch (Exception ex) {Logger.getLogger(JavaFXApplication3.class.getName()).log(Level.SEVERE, null, ex); Thread.currentThread().interrupt();}
-                 
-                 
              }
-
          }).start();
-            ////////////////////
-            
-            
-            
-            
-            
-            
-            
-           
+
             DoubleProperty opacity = new SimpleDoubleProperty();
                     Transition opacityTransition = new Transition() {
             {
                 setCycleDuration(Duration.seconds(1));
-                setCycleCount(Animation.INDEFINITE);
+                setCycleCount(1);
             }
             protected void interpolate(double frac) {
                 opacity.set(frac);
@@ -246,28 +259,26 @@ public class JavaFXApplication3 extends Application {
                 if (now > translate_lastTimerCall + 10000_000_000l) 
                 {
 //                    old_total_donnation = total_donnation;
+                    
                     try 
                     {
-//                        c = DBConnect.connect();
-//                        SQL = "Select * from donations";
-//                        rs = c.createStatement().executeQuery(SQL);
-//                        while (rs.next()) 
-//                        {total_donnation = rs.getInt("total_donnation");}
-//                        c.close();
-                        
-//                        total_donnation = total_donnation +5;
-                        
+//                       
                         if(total_donnation != old_total_donnation)
                         {
                             System.out.format("Total Donation: %s \n", total_donnation);
+                            
+                            area1000.setText(Integer.toString(total_donnation).substring(3, 4)); 
+                            area100.setText(Integer.toString(total_donnation).substring(2, 3)); 
+                            area10.setText(Integer.toString(total_donnation).substring(1, 2)); 
+                            area1.setText(Integer.toString(total_donnation).substring(0, 1));
 
                             old_total_donnation = total_donnation;
                             if (!pane1_full)
                             {
-//                                grid_pane1.getChildren().clear();
+                                grid_pane1.getChildren().clear();
                                 grid_pane1.getChildren().removeAll(imageview_tile1,hBox_outter_last);                                
                             }
-//                            grid_pane2.getChildren().clear();
+                            grid_pane2.getChildren().clear();
                             grid_pane2.getChildren().removeAll(imageview_tile2,hBox_outter_last);
 
                             for(i=0; i<=total_donnation; i++)
@@ -281,9 +292,7 @@ public class JavaFXApplication3 extends Application {
                                 hBox_outter1 = new HBox();
                                 hBox_outter1.setStyle(style_outter);
                                 hBox_outter1.getChildren().add(imageview_tile1);
-                               
-                                
-                                
+                                                               
                                 grid_pane1.add(hBox_outter1, current_column_pane1,current_row_pane1);   
                                 current_column_pane1 = current_column_pane1+1;
                                 if (current_column_pane1 == max_columns_pane1 )
@@ -383,18 +392,63 @@ public class JavaFXApplication3 extends Application {
     public void start(Stage stage) {
 
         Pane root = new Pane();
-//        Scene scene = new Scene(root, 1280, 1024);
-        Scene scene = new Scene(root, 983, 736);
+        String image = JavaFXApplication3.class.getResource("/Images/6.jpg").toExternalForm();
+        Mainpane.setStyle("-fx-background-image: url('" + image + "'); -fx-background-image-repeat: repeat; -fx-background-size: 1920 1080;-fx-background-position: bottom left;");  
+        
+        Scene scene = new Scene(root, 1920, 1080);
         scene.getStylesheets().addAll(this.getClass().getResource("style.css").toExternalForm());
         stage.setScene(scene);
-        Mainpane =   Main_pane();
+        
+        area1000 = SplitFlapBuilder.create().minWidth(70).minHeight(120).maxHeight(120).flipTime(300).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
+        area100 = SplitFlapBuilder.create().minWidth(70).minHeight(120).maxHeight(120).flipTime(300).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
+        area10 = SplitFlapBuilder.create().minWidth(70).minHeight(120).maxHeight(120).flipTime(300).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
+        area1 = SplitFlapBuilder.create().minWidth(70).minHeight(120).maxHeight(120).flipTime(300).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
+        HBox hbox_splitflap = new HBox();
+        hbox_splitflap.setSpacing(5);
+        hbox_splitflap.getChildren().addAll(area1,area10,area100,area1000);
+        hbox_splitflap.setTranslateY(footerY);
+        
         image_pane =   image_pane();
-        Mainpane.add(image_pane, 0, 10,11,4);  
+
+        Text donnation_text = new Text("TOTAL AREA RAISED");
+        donnation_text.setId("donnation_text");
+        donnation_text.setFill(Color.WHITE);
+        donnation_text.setTranslateY(footerY);
+        
+        TextFlow Title_flow = new TextFlow();
+        Text title_text1 = new Text("DAAR IBN ABBAS  & DAAR AL-QURAN\n");
+        title_text1.setId("title_text1");
+        title_text1.setFill(Color.GOLDENROD);
+        Text title_text2 = new Text("FUND RAISING DINNER\n");
+        title_text2.setId("title_text2");
+        title_text2.setFill(Color.WHITE);
+        Text title_text3 = new Text("CONDELL PARK MASJID");
+        title_text3.setId("title_text3");
+        title_text3.setFill(Color.WHITE);
+        Title_flow.getChildren().addAll(title_text1,title_text2,title_text3);
+        title_text3.setTranslateY(-37);
+        Title_flow.setTranslateY(-30);
+        Title_flow.setTranslateX(300);
+        
+        Mainpane.add(image_pane, 1, 3,6,12);
+        Mainpane.add(hbox_splitflap, 9, 16,2,2);
+        Mainpane.add(donnation_text, 1, 16,7,3);
+        Mainpane.add(Title_flow, 1, 1,14,5);
+        
+        DropShadow ds = new DropShadow();
+        ds.setOffsetY(10.0);
+        ds.setOffsetX(10.0);
+        ds.setColor(Color.BLACK);
+        
+        Title_flow.setEffect(ds);
+        image_pane.setEffect(ds);
+        donnation_text.setEffect(ds);
+        hbox_splitflap.setEffect(ds);
+
         scene.setRoot(Mainpane);
 //        stage.sizeToScene(); 
         stage.show();
         translate_timer.start(); 
-        
     }
 
     
@@ -406,13 +460,8 @@ public class JavaFXApplication3 extends Application {
         System.exit(0);
     }
     
-    public GridPane Main_pane() {
-        
-         
-//        image = JavaFXApplication3.class.getResource("/Images/greensquare.gif").toExternalForm();
-//        Mainpane.setStyle("-fx-background-image: url('" + image + "'); -fx-background-repeat: repeat; ");  
-//        Mainpane.setStyle("-fx-background-image: url('" + image + "');  -fx-background-repeat: no-repeat; -fx-background-size: contain;");        
-        
+    public GridPane image_pane() {
+      
         Mainpane.getColumnConstraints().setAll(
                 ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
                 ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
@@ -450,128 +499,43 @@ public class JavaFXApplication3 extends Application {
                 RowConstraintsBuilder.create().percentHeight(100/19.0).build()
         );
 //        Mainpane.setGridLinesVisible(true);
-        Mainpane.setId("Mainpane");
+//        Mainpane.setId("Mainpane");
         
-        return Mainpane;
-    }
-    
-    public GridPane image_pane() {
-      
-        String image_old = JavaFXApplication3.class.getResource("/Images/mussalah_old.png").toExternalForm();
-//        image_pane.setStyle("-fx-background-image: url('" + image_old + "'); -fx-background-repeat: no-repeat; -fx-background-size: contain;");        
-        image_pane.getColumnConstraints().setAll(
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build(),
-                ColumnConstraintsBuilder.create().percentWidth(100/13.0).build()       
-        );
-        image_pane.getRowConstraints().setAll(
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build(),
-                RowConstraintsBuilder.create().percentHeight(100/13.0).build()
-        );
+        ImageView imageview_old_Mussalah = new ImageView(new Image(getClass().getResourceAsStream("/Images/mussalah_old_cut.png")));      
+//        imageview_old_Mussalah.setFitWidth((image_Width+(2*border_width))*(max_columns_pane1+max_columns_pane2)); //966
+        imageview_old_Mussalah.setFitWidth(1150);
+//        imageview_old_Mussalah.setFitHeight(559);
+        imageview_old_Mussalah.setPreserveRatio(true);
+        
+        hBox_old_Mussalah = new HBox();
+        hBox_old_Mussalah.getChildren().add(imageview_old_Mussalah);
+//        hBox_old_Mussalah.setTranslateX(30);
+//        hBox_old_Mussalah.setTranslateY(470);
+        hBox_old_Mussalah.setId("prayertime_pane");
+        hBox_old_Mussalah.setPadding(new Insets(30, 30, 30, 30));
+
 //        image_pane.setGridLinesVisible(true);
-        image_pane.setPadding(new Insets(10, 10, 10, 10));
-        image_pane.add(grid_pane1,1,9,13,14);
-        image_pane.add(grid_pane2,16,1,12,21);
-//        image_pane.setId("prayertime_pane");
-        image_pane.setPadding(new Insets(20, 20, 20, 20));
-        DropShadow ds = new DropShadow();
-        ds.setOffsetY(10.0);
-        ds.setOffsetX(10.0);
-        ds.setColor(Color.BLACK);
-        image_pane.setEffect(ds);
+        image_pane.add(grid_pane1,0,0);
+        image_pane.add(grid_pane2,1,0);
+        image_pane.add(hBox_old_Mussalah,0,0);
+        grid_pane1.toFront();
+        grid_pane2.toFront(); 
+        
+//        image_pane.setTranslateX(59);
+        
+        image_pane.setTranslateY(image_paneY);
+        
+        int pane1_setTranslateX = 148;
+        int pane1_setTranslateY = 205;
+        
+        grid_pane1.setTranslateX(pane1_setTranslateX);
+        grid_pane1.setTranslateY(pane1_setTranslateY);
+        
+        grid_pane2.setTranslateX(-762 +pane1_setTranslateX );
+        grid_pane2.setTranslateY(-16*(image_Height+(border_width*2))+ pane1_setTranslateY);
+
         return image_pane;
     }
     
     
 }
-
-
-
-    //                                image_tile1.setFitWidth(image_Width);
-    //                                image_tile1.setFitHeight(image_Height);
-    //                                image_tile1.setPreserveRatio(false);
-                                
-    //                                hBox_outter = new HBox();
-    //                                style_outter = "-fx-border-color: white;" + "-fx-border-width: 0;";
-    //                                hBox_outter.setStyle(style_outter);
-    //                                hBox_outter.getChildren().add(image_tile1);
- 
-
-    //                                    image_tile2.setFitWidth(image_Width);
-    //                                    image_tile2.setFitHeight(image_Height);
-                    //                image_tile2.setPreserveRatio(true);
-
-                                    
-
-//                                        hBox_outter = new HBox();
-//                                        style_outter = "-fx-border-color: grey;" + "-fx-border-width: 0.5;";
-//                                        hBox_outter.setStyle(style_outter);
-//                                        hBox_outter.getChildren().add(imageview_tile2);
-
-    //                      System.out.print("current column 1: "); 
-    //                      System.out.println(current_column_pane1); 
-    //                      System.out.print("current row 1: "); 
-    //                      System.out.println(current_row_pane1); 
