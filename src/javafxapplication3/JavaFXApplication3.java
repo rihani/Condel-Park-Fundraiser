@@ -4,6 +4,19 @@
  * and open the template in the editor.
  */
 
+
+
+/*
+TO DO:
+
+Cash raised value transition
+Change refresh time
+Fix database not showing tiles around 900
+
+
+*/
+
+
 package javafxapplication3;
 
 import eu.hansolo.enzo.common.Section;
@@ -55,8 +68,9 @@ import javax.imageio.ImageIO;
 
 /**
  *
- * @author samia
+ * @author Ossama
  */
+
 public class JavaFXApplication3 extends Application {
     
     GridPane image_pane = new GridPane();
@@ -64,7 +78,8 @@ public class JavaFXApplication3 extends Application {
     GridPane Subpane = new GridPane();
     GridPane grid_pane1 = new GridPane();
     GridPane grid_pane2 = new GridPane();
-    private SplitFlap area1000, area100, area10, area1, m210, m21;
+    private SplitFlap area1000, area100, area10, area1;
+    private SplitFlap target_area1000, target_area100, target_area10, target_area1;
     
     HBox hBox_outter1;
     HBox hBox_outter2;
@@ -111,14 +126,22 @@ public class JavaFXApplication3 extends Application {
     int current_row_pane2 = 0;
     int current_column_pane2 = 0;
     
+//Node Positioning///////////////////////////////////
+    
+    int titleX = 480;
+    int titleY = -30;
+    int image_paneX = 50;
     int image_paneY = 70;
-    int footerY = 20;
+    int footerY = -10;
+    int footerX = 100;
+ //////////////////////////////////////////////////////   
     
     
-    //////////////////////////////////
+// Image sizing ////////////////////////////////
     double image_Width = 8;   //7.95 
     double image_Height =8;  //7.95
-    ///////////////////////////////////    
+    int old_Mussalah_imageWidth = 1450;
+//////////////////////////////////////////////////////    
 
     int max_donnation_pane1 = 1169;
     int max_donnation_pane2 = 1805;
@@ -163,7 +186,7 @@ public class JavaFXApplication3 extends Application {
                         {total_donnation = rs.getInt("total_donnation");}
                         c.close(); 
                         firsttime = false;
-                    
+//                    
                         }
                         total_donnation = total_donnation +5;
                         
@@ -272,6 +295,7 @@ public class JavaFXApplication3 extends Application {
                             area10.setText(Integer.toString(total_donnation).substring(1, 2)); 
                             area1.setText(Integer.toString(total_donnation).substring(0, 1));
 
+                            
                             old_total_donnation = total_donnation;
                             if (!pane1_full)
                             {
@@ -392,7 +416,7 @@ public class JavaFXApplication3 extends Application {
     public void start(Stage stage) {
 
         Pane root = new Pane();
-        String image = JavaFXApplication3.class.getResource("/Images/6.jpg").toExternalForm();
+        String image = JavaFXApplication3.class.getResource("/Images/mix.png").toExternalForm();
         Mainpane.setStyle("-fx-background-image: url('" + image + "'); -fx-background-image-repeat: repeat; -fx-background-size: 1920 1080;-fx-background-position: bottom left;");  
         
         Scene scene = new Scene(root, 1920, 1080);
@@ -406,20 +430,39 @@ public class JavaFXApplication3 extends Application {
         HBox hbox_splitflap = new HBox();
         hbox_splitflap.setSpacing(5);
         hbox_splitflap.getChildren().addAll(area1,area10,area100,area1000);
-        hbox_splitflap.setTranslateY(footerY);
+        hbox_splitflap.setTranslateY(-20);       
+        target_area1000 = SplitFlapBuilder.create().minWidth(70).minHeight(120).maxHeight(120).flipTime(300).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
+        target_area100 = SplitFlapBuilder.create().minWidth(70).minHeight(120).maxHeight(120).flipTime(300).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
+        target_area10 = SplitFlapBuilder.create().minWidth(70).minHeight(120).maxHeight(120).flipTime(300).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
+        target_area1 = SplitFlapBuilder.create().minWidth(70).minHeight(120).maxHeight(120).flipTime(300).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
+        target_area1000.setText("5"); 
+        target_area100.setText("8"); 
+        target_area10.setText("2"); 
+        target_area1.setText("3");                           
+        HBox target_hbox_splitflap = new HBox();
+        target_hbox_splitflap.setSpacing(5);
+        target_hbox_splitflap.getChildren().addAll(target_area1,target_area10,target_area100,target_area1000);
+        target_hbox_splitflap.setTranslateY(-20);
+        Text donnation_text = new Text("TOTAL AREA RAISED    ");
+        donnation_text.setId("donnation_text");
+        donnation_text.setFill(Color.WHITE);       
+        Text donnation_text_slash = new Text("/");
+        donnation_text_slash.setId("donnation_text");
+        donnation_text_slash.setFill(Color.WHITE);       
+        HBox footer = new HBox();
+        footer.getChildren().addAll(donnation_text,hbox_splitflap,donnation_text_slash,target_hbox_splitflap);
+        footer.setId("prayertime_pane");
+        footer.setPadding(new Insets(40, 30, -25, 30));
+        footer.setTranslateX(footerX);
+        footer.setTranslateY(footerY);
         
         image_pane =   image_pane();
-
-        Text donnation_text = new Text("TOTAL AREA RAISED");
-        donnation_text.setId("donnation_text");
-        donnation_text.setFill(Color.WHITE);
-        donnation_text.setTranslateY(footerY);
         
         TextFlow Title_flow = new TextFlow();
         Text title_text1 = new Text("DAAR IBN ABBAS  & DAAR AL-QURAN\n");
         title_text1.setId("title_text1");
         title_text1.setFill(Color.GOLDENROD);
-        Text title_text2 = new Text("FUND RAISING DINNER\n");
+        Text title_text2 = new Text("FUNDRAISING  DINNER\n");
         title_text2.setId("title_text2");
         title_text2.setFill(Color.WHITE);
         Text title_text3 = new Text("CONDELL PARK MASJID");
@@ -427,13 +470,12 @@ public class JavaFXApplication3 extends Application {
         title_text3.setFill(Color.WHITE);
         Title_flow.getChildren().addAll(title_text1,title_text2,title_text3);
         title_text3.setTranslateY(-37);
-        Title_flow.setTranslateY(-30);
-        Title_flow.setTranslateX(300);
+        Title_flow.setTranslateY(titleY);
+        Title_flow.setTranslateX(titleX);
         
-        Mainpane.add(image_pane, 1, 3,6,12);
-        Mainpane.add(hbox_splitflap, 9, 16,2,2);
-        Mainpane.add(donnation_text, 1, 16,7,3);
         Mainpane.add(Title_flow, 1, 1,14,5);
+        Mainpane.add(image_pane, 1, 3,6,12);
+        Mainpane.add(footer, 1, 16,7,10);
         
         DropShadow ds = new DropShadow();
         ds.setOffsetY(10.0);
@@ -444,7 +486,8 @@ public class JavaFXApplication3 extends Application {
         image_pane.setEffect(ds);
         donnation_text.setEffect(ds);
         hbox_splitflap.setEffect(ds);
-
+        target_hbox_splitflap.setEffect(ds);
+        
         scene.setRoot(Mainpane);
 //        stage.sizeToScene(); 
         stage.show();
@@ -502,18 +545,13 @@ public class JavaFXApplication3 extends Application {
 //        Mainpane.setId("Mainpane");
         
         ImageView imageview_old_Mussalah = new ImageView(new Image(getClass().getResourceAsStream("/Images/mussalah_old_cut.png")));      
-//        imageview_old_Mussalah.setFitWidth((image_Width+(2*border_width))*(max_columns_pane1+max_columns_pane2)); //966
-        imageview_old_Mussalah.setFitWidth(1150);
-//        imageview_old_Mussalah.setFitHeight(559);
+        imageview_old_Mussalah.setFitWidth(old_Mussalah_imageWidth);
         imageview_old_Mussalah.setPreserveRatio(true);
         
         hBox_old_Mussalah = new HBox();
         hBox_old_Mussalah.getChildren().add(imageview_old_Mussalah);
-//        hBox_old_Mussalah.setTranslateX(30);
-//        hBox_old_Mussalah.setTranslateY(470);
         hBox_old_Mussalah.setId("prayertime_pane");
         hBox_old_Mussalah.setPadding(new Insets(30, 30, 30, 30));
-
 //        image_pane.setGridLinesVisible(true);
         image_pane.add(grid_pane1,0,0);
         image_pane.add(grid_pane2,1,0);
@@ -521,8 +559,7 @@ public class JavaFXApplication3 extends Application {
         grid_pane1.toFront();
         grid_pane2.toFront(); 
         
-//        image_pane.setTranslateX(59);
-        
+        image_pane.setTranslateX(image_paneX);
         image_pane.setTranslateY(image_paneY);
         
         int pane1_setTranslateX = 148;
@@ -531,7 +568,7 @@ public class JavaFXApplication3 extends Application {
         grid_pane1.setTranslateX(pane1_setTranslateX);
         grid_pane1.setTranslateY(pane1_setTranslateY);
         
-        grid_pane2.setTranslateX(-762 +pane1_setTranslateX );
+        grid_pane2.setTranslateX(-761 +pane1_setTranslateX );
         grid_pane2.setTranslateY(-16*(image_Height+(border_width*2))+ pane1_setTranslateY);
 
         return image_pane;
