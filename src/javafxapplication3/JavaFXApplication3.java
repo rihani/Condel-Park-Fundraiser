@@ -9,10 +9,8 @@
 /*
 TO DO:
 
-Cash raised value transition
-Change refresh time
-Fix database not showing tiles around 900
-
+insert logos
+Insert phone numbers: 0410 856 170, bank details 
 
 */
 
@@ -78,8 +76,7 @@ public class JavaFXApplication3 extends Application {
     GridPane Subpane = new GridPane();
     GridPane grid_pane1 = new GridPane();
     GridPane grid_pane2 = new GridPane();
-    private SplitFlap area1000, area100, area10, area1;
-    private SplitFlap target_area1000, target_area100, target_area10, target_area1;
+    private SplitFlap area1000000,area100000,area10000,area1000, area100, area10, area1, fassila1, fassila2;
     
     HBox hBox_outter1;
     HBox hBox_outter2;
@@ -91,8 +88,9 @@ public class JavaFXApplication3 extends Application {
     boolean split = false;
     boolean pane1_full = false;
 
-    Integer total_donnation = 900;
-    int old_total_donnation = 0 ;
+    private int total_donnation = 0;
+    private int old_total_donnation = 0 ;
+    private int  dollar_value = 0 ;
     
     private AnimationTimer translate_timer;
     private long translate_lastTimerCall;
@@ -128,19 +126,19 @@ public class JavaFXApplication3 extends Application {
     
 //Node Positioning///////////////////////////////////
     
-    int titleX = 480;
-    int titleY = -30;
-    int image_paneX = 50;
-    int image_paneY = 70;
-    int footerY = -10;
-    int footerX = 100;
+    int titleX = 50;
+    int titleY = -40;
+    int image_paneX = -65;
+    int image_paneY = 0;
+    int footerX = 15;
+    int footerY = -150;
  //////////////////////////////////////////////////////   
     
     
 // Image sizing ////////////////////////////////
-    double image_Width = 8;   //7.95 
-    double image_Height =8;  //7.95
-    int old_Mussalah_imageWidth = 1450;
+    double image_Width = 7.2;   //7.95 
+    double image_Height =7.2;  //7.95
+    int old_Mussalah_imageWidth = 1150;
 //////////////////////////////////////////////////////    
 
     int max_donnation_pane1 = 1169;
@@ -158,7 +156,6 @@ public class JavaFXApplication3 extends Application {
 
             Font.loadFont(JavaFXApplication3.class.getResource("Fonts/Bebas.ttf").toExternalForm(),30);
             Font.loadFont(JavaFXApplication3.class.getResource("Fonts/avantgarde-demi.ttf").toExternalForm(),30);
-
             
             blink_file = new File("blink.png");
             blink_image1 = new Image(blink_file.toURI().toString());
@@ -169,30 +166,26 @@ public class JavaFXApplication3 extends Application {
             new Thread(() -> 
         {
              System.out.println(" ... Database thread starting.....");
-             boolean firsttime = true;
+//             boolean firsttime = true;
              for (;;) 
              {
-                
                  try 
                 {
-                    old_total_donnation = total_donnation;
+//                    old_total_donnation = total_donnation;
                     try
                     {
-                        if (firsttime){
+//                        if (firsttime){
                         c = DBConnect.connect();
-                        SQL = "Select * from donations";
+                        SQL = "Select sum(total_donnation) as total_donnation from donations";
                         rs = c.createStatement().executeQuery(SQL);
                         while (rs.next()) 
                         {total_donnation = rs.getInt("total_donnation");}
                         c.close(); 
-                        firsttime = false;
-//                    
-                        }
-                        total_donnation = total_donnation +5;
-                        
-                         
-///////////////////////////change to small refresh times
-                        Thread.sleep(30000);
+                        if (total_donnation != old_total_donnation){System.out.format("Total Donation Update: %s \n", total_donnation);}
+//                        firsttime = false;
+//                        }
+//                        total_donnation = total_donnation +5;
+                        Thread.sleep(4000);
                     }
                     catch (Exception e){Logger.getLogger(JavaFXApplication3.class.getName()).log(Level.SEVERE, null, e);}
                 }     
@@ -200,18 +193,6 @@ public class JavaFXApplication3 extends Application {
              }
          }).start();
 
-            DoubleProperty opacity = new SimpleDoubleProperty();
-                    Transition opacityTransition = new Transition() {
-            {
-                setCycleDuration(Duration.seconds(1));
-                setCycleCount(1);
-            }
-            protected void interpolate(double frac) {
-                opacity.set(frac);
-            }
-        };
-
-            
             if(split)
             {
                 File file = new File("new_mussalah_1.png"); // I have bear.jpg in my working directory  
@@ -280,23 +261,41 @@ public class JavaFXApplication3 extends Application {
             translate_timer = new AnimationTimer() {
             @Override public void handle(long now) {
                 if (now > translate_lastTimerCall + 10000_000_000l) 
-                {
-//                    old_total_donnation = total_donnation;
-                    
+                {                    
                     try 
                     {
-//                       
                         if(total_donnation != old_total_donnation)
                         {
-                            System.out.format("Total Donation: %s \n", total_donnation);
-                            
-                            area1000.setText(Integer.toString(total_donnation).substring(3, 4)); 
-                            area100.setText(Integer.toString(total_donnation).substring(2, 3)); 
-                            area10.setText(Integer.toString(total_donnation).substring(1, 2)); 
-                            area1.setText(Integer.toString(total_donnation).substring(0, 1));
+                            dollar_value = total_donnation*850;
+                            System.out.format("$$ value: %s \n", dollar_value);
 
+                            if (dollar_value<1000000)
+                            {
+                                area1.setText(Integer.toString(dollar_value).substring(5, 6));
+                                area10.setText(Integer.toString(dollar_value).substring(4, 5));
+                                area100.setText(Integer.toString(dollar_value).substring(3, 4));
+                                area1000.setText(Integer.toString(dollar_value).substring(2, 3)); 
+                                area10000.setText(Integer.toString(dollar_value).substring(1, 2)); 
+                                area100000.setText(Integer.toString(dollar_value).substring(0, 1)); 
+                                area1000000.setText(" ");
+                                fassila1.setText(" ");
+                            } 
+                            
+                            else if (dollar_value>1000000) 
+                            {
+                                area1.setText(Integer.toString(dollar_value).substring(6, 7));
+                                area10.setText(Integer.toString(dollar_value).substring(5, 6));
+                                area100.setText(Integer.toString(dollar_value).substring(4, 5));
+                                area1000.setText(Integer.toString(dollar_value).substring(3, 4)); 
+                                area10000.setText(Integer.toString(dollar_value).substring(2, 3)); 
+                                area100000.setText(Integer.toString(dollar_value).substring(1, 2)); 
+                                area1000000.setText(Integer.toString(dollar_value).substring(0, 1));
+                                fassila1.setText(",");
+                            }
                             
                             old_total_donnation = total_donnation;
+//                            System.out.format("After Total Donation: %s \n", total_donnation);
+                            
                             if (!pane1_full)
                             {
                                 grid_pane1.getChildren().clear();
@@ -305,26 +304,27 @@ public class JavaFXApplication3 extends Application {
                             grid_pane2.getChildren().clear();
                             grid_pane2.getChildren().removeAll(imageview_tile2,hBox_outter_last);
 
+                            
+                            
                             for(i=0; i<=total_donnation; i++)
                             {
-                                if (pane1_full){  System.out.println("Pane 1 has not been redrawn"); if(ft1 != null) { ft1.stop(); } break;}
+                                if (pane1_full){ if(ft1 != null) { ft1.stop(); } break;}
                                 ImageView imageview_tile1 = new ImageView(new Image(getClass().getResourceAsStream("/Images/image_tiles/pane1_img"+i+".png")));                                   
                                 imageview_tile1.setFitWidth(image_Width);
                                 imageview_tile1.setFitHeight(image_Height);
                                 imageview_tile1.setPreserveRatio(false);
-
                                 hBox_outter1 = new HBox();
                                 hBox_outter1.setStyle(style_outter);
                                 hBox_outter1.getChildren().add(imageview_tile1);
-                                                               
                                 grid_pane1.add(hBox_outter1, current_column_pane1,current_row_pane1);   
                                 current_column_pane1 = current_column_pane1+1;
+                                
                                 if (current_column_pane1 == max_columns_pane1 )
                                 {
                                     current_row_pane1 = current_row_pane1+1;
                                     current_column_pane1 = 0;
                                 }
-                                if (i == max_donnation_pane1 ){ pane1_full = true; System.out.println("Pane 1 full"); if(ft1 != null) { ft1.stop(); } break; }
+                                if (i == max_donnation_pane1 ){ pane1_full = true; if(ft1 != null) { ft1.stop(); } break; }
                                 if (i == total_donnation)
                                 {
                                     if (i != max_donnation_pane1)
@@ -416,66 +416,59 @@ public class JavaFXApplication3 extends Application {
     public void start(Stage stage) {
 
         Pane root = new Pane();
-        String image = JavaFXApplication3.class.getResource("/Images/mix.png").toExternalForm();
-        Mainpane.setStyle("-fx-background-image: url('" + image + "'); -fx-background-image-repeat: repeat; -fx-background-size: 1920 1080;-fx-background-position: bottom left;");  
-        
-        Scene scene = new Scene(root, 1920, 1080);
+//        Scene scene = new Scene(root, 1920, 1080);
+        Scene scene = new Scene(root, 1280, 1024);
         scene.getStylesheets().addAll(this.getClass().getResource("style.css").toExternalForm());
         stage.setScene(scene);
+        String image = JavaFXApplication3.class.getResource("/Images/13.jpg").toExternalForm();
+        Mainpane.setStyle("-fx-background-image: url('" + image + "'); -fx-background-image-repeat: yes; -fx-background-size: 1280 1024;-fx-background-position: top right;");          
         
-        area1000 = SplitFlapBuilder.create().minWidth(70).minHeight(120).maxHeight(120).flipTime(300).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
-        area100 = SplitFlapBuilder.create().minWidth(70).minHeight(120).maxHeight(120).flipTime(300).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
-        area10 = SplitFlapBuilder.create().minWidth(70).minHeight(120).maxHeight(120).flipTime(300).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
-        area1 = SplitFlapBuilder.create().minWidth(70).minHeight(120).maxHeight(120).flipTime(300).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
+        area1000000 = SplitFlapBuilder.create().minWidth(50).minHeight(90).maxHeight(90).flipTime(150).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
+        area100000 = SplitFlapBuilder.create().minWidth(50).minHeight(90).maxHeight(90).flipTime(150).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
+        area10000 = SplitFlapBuilder.create().minWidth(50).minHeight(90).maxHeight(90).flipTime(150).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
+        area1000 = SplitFlapBuilder.create().minWidth(50).minHeight(90).maxHeight(90).flipTime(150).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
+        area100 = SplitFlapBuilder.create().minWidth(50).minHeight(90).maxHeight(90).flipTime(150).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
+        area10 = SplitFlapBuilder.create().minWidth(50).minHeight(90).maxHeight(90).flipTime(150).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
+        area1 = SplitFlapBuilder.create().minWidth(50).minHeight(90).maxHeight(90).flipTime(150).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
+        fassila1 = SplitFlapBuilder.create().minWidth(50).minHeight(90).maxHeight(90).flipTime(0).selection(SplitFlap.EXTENDED).textColor(Color.WHITESMOKE).build();
+        fassila2 = SplitFlapBuilder.create().minWidth(50).minHeight(90).maxHeight(90).flipTime(0).selection(SplitFlap.EXTENDED).textColor(Color.WHITESMOKE).build();
+        fassila1.setText(",");
+        fassila2.setText(",");
+        
         HBox hbox_splitflap = new HBox();
         hbox_splitflap.setSpacing(5);
-        hbox_splitflap.getChildren().addAll(area1,area10,area100,area1000);
-        hbox_splitflap.setTranslateY(-20);       
-        target_area1000 = SplitFlapBuilder.create().minWidth(70).minHeight(120).maxHeight(120).flipTime(300).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
-        target_area100 = SplitFlapBuilder.create().minWidth(70).minHeight(120).maxHeight(120).flipTime(300).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
-        target_area10 = SplitFlapBuilder.create().minWidth(70).minHeight(120).maxHeight(120).flipTime(300).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
-        target_area1 = SplitFlapBuilder.create().minWidth(70).minHeight(120).maxHeight(120).flipTime(300).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
-        target_area1000.setText("5"); 
-        target_area100.setText("8"); 
-        target_area10.setText("2"); 
-        target_area1.setText("3");                           
-        HBox target_hbox_splitflap = new HBox();
-        target_hbox_splitflap.setSpacing(5);
-        target_hbox_splitflap.getChildren().addAll(target_area1,target_area10,target_area100,target_area1000);
-        target_hbox_splitflap.setTranslateY(-20);
-        Text donnation_text = new Text("TOTAL AREA RAISED    ");
+        hbox_splitflap.getChildren().addAll(area1000000,fassila1,area100000,area10000,area1000,fassila2,area100,area10,area1);
+        hbox_splitflap.setTranslateY(-10);       
+        
+        Text donnation_text = new Text("TOTAL $$$ RAISED    ");
         donnation_text.setId("donnation_text");
-        donnation_text.setFill(Color.WHITE);       
-        Text donnation_text_slash = new Text("/");
-        donnation_text_slash.setId("donnation_text");
-        donnation_text_slash.setFill(Color.WHITE);       
+        donnation_text.setFill(Color.WHITE);             
         HBox footer = new HBox();
-        footer.getChildren().addAll(donnation_text,hbox_splitflap,donnation_text_slash,target_hbox_splitflap);
+        footer.getChildren().addAll(donnation_text,hbox_splitflap);
         footer.setId("prayertime_pane");
-        footer.setPadding(new Insets(40, 30, -25, 30));
+        footer.setPadding(new Insets(30, 20, 7, 20));
         footer.setTranslateX(footerX);
         footer.setTranslateY(footerY);
         
         image_pane =   image_pane();
         
         TextFlow Title_flow = new TextFlow();
-        Text title_text1 = new Text("DAAR IBN ABBAS  & DAAR AL-QURAN\n");
+        Text title_text1 = new Text("              DAAR IBN ABBAS  & DAAR AL-QURAN\n\n");
         title_text1.setId("title_text1");
         title_text1.setFill(Color.GOLDENROD);
-        Text title_text2 = new Text("FUNDRAISING  DINNER\n");
-        title_text2.setId("title_text2");
-        title_text2.setFill(Color.WHITE);
-        Text title_text3 = new Text("CONDELL PARK MASJID");
+        Text title_text3 = new Text("     CONDELL PARK MASJID FUNDRAISER");
         title_text3.setId("title_text3");
         title_text3.setFill(Color.WHITE);
-        Title_flow.getChildren().addAll(title_text1,title_text2,title_text3);
+        Title_flow.getChildren().addAll(title_text1,title_text3);
         title_text3.setTranslateY(-37);
         Title_flow.setTranslateY(titleY);
         Title_flow.setTranslateX(titleX);
-        
-        Mainpane.add(Title_flow, 1, 1,14,5);
+        Title_flow.setPadding(new Insets(20, -50, -20, 20));
+        Title_flow.setId("prayertime_pane");
+                
+        Mainpane.add(Title_flow, 1, 1,10,2);
         Mainpane.add(image_pane, 1, 3,6,12);
-        Mainpane.add(footer, 1, 16,7,10);
+        Mainpane.add(footer, 1, 16,7,2);
         
         DropShadow ds = new DropShadow();
         ds.setOffsetY(10.0);
@@ -486,14 +479,12 @@ public class JavaFXApplication3 extends Application {
         image_pane.setEffect(ds);
         donnation_text.setEffect(ds);
         hbox_splitflap.setEffect(ds);
-        target_hbox_splitflap.setEffect(ds);
         
         scene.setRoot(Mainpane);
 //        stage.sizeToScene(); 
         stage.show();
         translate_timer.start(); 
     }
-
     
     /**
      * @param args the command line arguments
@@ -544,7 +535,7 @@ public class JavaFXApplication3 extends Application {
 //        Mainpane.setGridLinesVisible(true);
 //        Mainpane.setId("Mainpane");
         
-        ImageView imageview_old_Mussalah = new ImageView(new Image(getClass().getResourceAsStream("/Images/mussalah_old_cut.png")));      
+        ImageView imageview_old_Mussalah = new ImageView(new Image(getClass().getResourceAsStream("/Images/mussalah_old_cut_round.jpg")));      
         imageview_old_Mussalah.setFitWidth(old_Mussalah_imageWidth);
         imageview_old_Mussalah.setPreserveRatio(true);
         
@@ -562,14 +553,14 @@ public class JavaFXApplication3 extends Application {
         image_pane.setTranslateX(image_paneX);
         image_pane.setTranslateY(image_paneY);
         
-        int pane1_setTranslateX = 148;
-        int pane1_setTranslateY = 205;
+        int pane1_setTranslateX = 150;
+        int pane1_setTranslateY = 207;
         
         grid_pane1.setTranslateX(pane1_setTranslateX);
         grid_pane1.setTranslateY(pane1_setTranslateY);
         
-        grid_pane2.setTranslateX(-761 +pane1_setTranslateX );
-        grid_pane2.setTranslateY(-16*(image_Height+(border_width*2))+ pane1_setTranslateY);
+        grid_pane2.setTranslateX(-760 +pane1_setTranslateX );
+        grid_pane2.setTranslateY(-18*(image_Height+(border_width*2))+ pane1_setTranslateY);
 
         return image_pane;
     }

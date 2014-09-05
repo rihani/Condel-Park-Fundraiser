@@ -2,8 +2,8 @@
         
                
     #prayertime_pane{
-        /*-fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );*/ 
-        -fx-effect: dropshadow( one-pass-box , black , 8 , 0.2 , 2 , 0 );
+        -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 ); 
+        /*-fx-effect: dropshadow( one-pass-box , black , 8 , 0.2 , 2 , 0 );*/
          -fx-background-color: rgba(0, 0, 0, 0.2); 
          -fx-border-color: black;
 	 /*-fx-border-color: rgba(0,0,0,0.15);*/
@@ -19,7 +19,7 @@
     
     #donnation_text{
     -fx-font-family: 'Bebas Neue';
-    -fx-font-size: 110px;
+    -fx-font-size: 85px;
     -fx-text-fill:white;
     -fx-stroke: black;
     -fx-stroke-width: 1;
@@ -43,7 +43,7 @@
 
 #title_text3{
     -fx-font-family: 'AvantGarde-Demi';
-    -fx-font-size: 58px;
+    -fx-font-size: 45px;
     -fx-text-fill:white;
     -fx-stroke: black;
     -fx-stroke-width: 1;
