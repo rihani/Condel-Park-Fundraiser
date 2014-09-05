@@ -10,7 +10,6 @@
 TO DO:
 
 insert logos
-Insert phone numbers: 0410 856 170, bank details 
 
 */
 
@@ -76,7 +75,7 @@ public class JavaFXApplication3 extends Application {
     GridPane Subpane = new GridPane();
     GridPane grid_pane1 = new GridPane();
     GridPane grid_pane2 = new GridPane();
-    private SplitFlap area1000000,area100000,area10000,area1000, area100, area10, area1, fassila1, fassila2;
+    private SplitFlap dollar,area1000000,area100000,area10000,area1000, area100, area10, area1, fassila1, fassila2;
     
     HBox hBox_outter1;
     HBox hBox_outter2;
@@ -127,11 +126,11 @@ public class JavaFXApplication3 extends Application {
 //Node Positioning///////////////////////////////////
     
     int titleX = 50;
-    int titleY = -40;
+    int titleY = 0;
     int image_paneX = -65;
-    int image_paneY = 0;
-    int footerX = 15;
-    int footerY = -150;
+    int image_paneY = 75;
+    int footerX = 35;
+    int footerY = -20;
  //////////////////////////////////////////////////////   
     
     
@@ -181,7 +180,9 @@ public class JavaFXApplication3 extends Application {
                         while (rs.next()) 
                         {total_donnation = rs.getInt("total_donnation");}
                         c.close(); 
-                        if (total_donnation != old_total_donnation){System.out.format("Total Donation Update: %s \n", total_donnation);}
+//                        if (total_donnation != old_total_donnation){System.out.format("Total Donation Update: %s \n", total_donnation);}
+                        dollar_value = (total_donnation-900)*850;
+                        total_donnation = total_donnation - 311; //311
 //                        firsttime = false;
 //                        }
 //                        total_donnation = total_donnation +5;
@@ -266,10 +267,13 @@ public class JavaFXApplication3 extends Application {
                     {
                         if(total_donnation != old_total_donnation)
                         {
-                            dollar_value = total_donnation*850;
+                            
                             System.out.format("$$ value: %s \n", dollar_value);
+                            
+//                            
+                            
 
-                            if (dollar_value<1000000)
+                            if (dollar_value<1000000 && dollar_value>99999)
                             {
                                 area1.setText(Integer.toString(dollar_value).substring(5, 6));
                                 area10.setText(Integer.toString(dollar_value).substring(4, 5));
@@ -279,6 +283,7 @@ public class JavaFXApplication3 extends Application {
                                 area100000.setText(Integer.toString(dollar_value).substring(0, 1)); 
                                 area1000000.setText(" ");
                                 fassila1.setText(" ");
+                                fassila2.setText(",");
                             } 
                             
                             else if (dollar_value>1000000) 
@@ -291,10 +296,78 @@ public class JavaFXApplication3 extends Application {
                                 area100000.setText(Integer.toString(dollar_value).substring(1, 2)); 
                                 area1000000.setText(Integer.toString(dollar_value).substring(0, 1));
                                 fassila1.setText(",");
+                                fassila2.setText(",");
                             }
                             
+                            else if (dollar_value<100000 && dollar_value >9999) 
+                            {
+                                area1.setText(Integer.toString(dollar_value).substring(4, 5));
+                                area10.setText(Integer.toString(dollar_value).substring(3, 4));
+                                area100.setText(Integer.toString(dollar_value).substring(2, 3));
+                                area1000.setText(Integer.toString(dollar_value).substring(1, 2));
+                                area10000.setText(Integer.toString(dollar_value).substring(0, 1));
+                                area100000.setText(" ");
+                                area1000000.setText(" ");
+                                fassila1.setText(" ");
+                                fassila2.setText(",");
+                            }
+                            
+                            else if (dollar_value<10000 && dollar_value >999) 
+                            {
+                                area1.setText(Integer.toString(dollar_value).substring(3, 4));
+                                area10.setText(Integer.toString(dollar_value).substring(2, 3));
+                                area100.setText(Integer.toString(dollar_value).substring(1, 2));
+                                area1000.setText(Integer.toString(dollar_value).substring(0, 1));
+                                area10000.setText(" ");
+                                area100000.setText(" ");
+                                area1000000.setText(" ");
+                                fassila1.setText(" ");
+                                fassila2.setText(",");
+                            }
+                            
+                            else if (dollar_value<1000 && dollar_value >99) 
+                            {
+                                area1.setText(Integer.toString(dollar_value).substring(2, 3));
+                                area10.setText(Integer.toString(dollar_value).substring(1, 2));
+                                area100.setText(Integer.toString(dollar_value).substring(0, 1));
+                                area1000.setText(" ");
+                                area10000.setText(" ");
+                                area100000.setText(" ");
+                                area1000000.setText(" ");
+                                fassila1.setText(" ");
+                                fassila2.setText(" ");
+                            }
+                            
+                             else if (dollar_value<100 && dollar_value >9) 
+                            {
+                                area1.setText(Integer.toString(dollar_value).substring(1, 2));
+                                area10.setText(Integer.toString(dollar_value).substring(0, 1));
+                                area100.setText(" ");
+                                area1000.setText(" ");
+                                area10000.setText(" ");
+                                area100000.setText(" ");
+                                area1000000.setText(" ");
+                                fassila1.setText(" ");
+                                fassila2.setText(" ");
+                            }
+                            
+                             else if (dollar_value<10) 
+                            {
+                                area1.setText(Integer.toString(dollar_value).substring(0, 1));
+                                area10.setText(" ");
+                                area100.setText(" ");
+                                area1000.setText(" ");
+                                area10000.setText(" ");
+                                area100000.setText(" ");
+                                area1000000.setText(" ");
+                                fassila1.setText(" ");
+                                fassila2.setText(" ");
+                            }
+                            
+
+//                            
                             old_total_donnation = total_donnation;
-//                            System.out.format("After Total Donation: %s \n", total_donnation);
+//                            System.out.format("Working");
                             
                             if (!pane1_full)
                             {
@@ -432,23 +505,42 @@ public class JavaFXApplication3 extends Application {
         area1 = SplitFlapBuilder.create().minWidth(50).minHeight(90).maxHeight(90).flipTime(150).selection(SplitFlap.NUMERIC).textColor(Color.WHITESMOKE).build();
         fassila1 = SplitFlapBuilder.create().minWidth(50).minHeight(90).maxHeight(90).flipTime(0).selection(SplitFlap.EXTENDED).textColor(Color.WHITESMOKE).build();
         fassila2 = SplitFlapBuilder.create().minWidth(50).minHeight(90).maxHeight(90).flipTime(0).selection(SplitFlap.EXTENDED).textColor(Color.WHITESMOKE).build();
+        dollar = SplitFlapBuilder.create().minWidth(50).minHeight(90).maxHeight(90).flipTime(0).selection(SplitFlap.EXTENDED).textColor(Color.WHITESMOKE).build();
         fassila1.setText(",");
         fassila2.setText(",");
+        dollar.setText("$");
         
         HBox hbox_splitflap = new HBox();
         hbox_splitflap.setSpacing(5);
-        hbox_splitflap.getChildren().addAll(area1000000,fassila1,area100000,area10000,area1000,fassila2,area100,area10,area1);
+        hbox_splitflap.getChildren().addAll(dollar,area1000000,fassila1,area100000,area10000,area1000,fassila2,area100,area10,area1);
         hbox_splitflap.setTranslateY(-10);       
         
-        Text donnation_text = new Text("TOTAL $$$ RAISED    ");
+        Text donnation_text = new Text("TOTAL $$$ RAISED   ");
         donnation_text.setId("donnation_text");
         donnation_text.setFill(Color.WHITE);             
         HBox footer = new HBox();
         footer.getChildren().addAll(donnation_text,hbox_splitflap);
         footer.setId("prayertime_pane");
-        footer.setPadding(new Insets(30, 20, 7, 20));
+        footer.setPadding(new Insets(30, 90, 7, 70));
         footer.setTranslateX(footerX);
         footer.setTranslateY(footerY);
+        
+        
+        Text title_text2 = new Text("SMS YOUR SILENT PLEDGE TO  ");
+        title_text2.setId("title_text2");
+        title_text2.setFill(Color.WHITE);
+//        title_text2.setTranslateY(30);
+//        title_text2.setTranslateX(-40);
+        
+        TextFlow sms_flow = new TextFlow();
+        Text title_text4 = new Text("0410 856 170");
+        title_text4.setId("title_text4");
+        title_text4.setFill(Color.GOLDENROD);
+//        title_text4.setTranslateY(30);
+//        title_text4.setTranslateX(-40);
+        sms_flow.getChildren().addAll(title_text2,title_text4);
+        sms_flow.setTranslateY(70);
+        sms_flow.setTranslateX(-105);
         
         image_pane =   image_pane();
         
@@ -468,7 +560,8 @@ public class JavaFXApplication3 extends Application {
                 
         Mainpane.add(Title_flow, 1, 1,10,2);
         Mainpane.add(image_pane, 1, 3,6,12);
-        Mainpane.add(footer, 1, 16,7,2);
+        Mainpane.add(footer, 0, 16,7,2);
+        Mainpane.add(sms_flow, 5, 17,7,2);
         
         DropShadow ds = new DropShadow();
         ds.setOffsetY(10.0);
@@ -535,7 +628,7 @@ public class JavaFXApplication3 extends Application {
 //        Mainpane.setGridLinesVisible(true);
 //        Mainpane.setId("Mainpane");
         
-        ImageView imageview_old_Mussalah = new ImageView(new Image(getClass().getResourceAsStream("/Images/mussalah_old_cut_round.jpg")));      
+        ImageView imageview_old_Mussalah = new ImageView(new Image(getClass().getResourceAsStream("/Images/mussalah_old_cut_round_grey.png")));      
         imageview_old_Mussalah.setFitWidth(old_Mussalah_imageWidth);
         imageview_old_Mussalah.setPreserveRatio(true);
         
